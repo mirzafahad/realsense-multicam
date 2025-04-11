@@ -1,22 +1,28 @@
-[project]
+[tool.poetry]
 name = "multicam"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "Fahad Mirza",email = "fahadmirza8@gmail.com"}
-]
+description = "Pulling frames from multiple realsense camera, parallelly"
+authors = ["Fahad Mirza <fahadmirza8@gmail.com>"]
+license = "GNU GENERAL PUBLIC LICENSE"
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
-dependencies = [
-    "black (>=25.1.0,<26.0.0)",
-    "pytest (>=8.3.4,<9.0.0)",
-    "mypy (>=1.15.0,<2.0.0)",
-    "numpy (>=2.2.2,<3.0.0)",
-    "numpydantic (>=1.6.7,<2.0.0)",
-    "opencv-python (>=4.11.0.86,<5.0.0.0)"
-]
+repository = "https://github.com/mirzafahad/realsense-multicam.git"
+keywords = ["core", "edge", "qco", "frictionless"]
 
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[tool.poetry.dependencies]
+python = "^3.11.8"
+pydantic = "^2.11.3"
+numpydantic = "^1.6.8"
+opencv-python = "^4.11.0.86"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+pytest = "^8.3.5"
+mypy = "^1.15.0"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
