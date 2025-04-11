@@ -1,0 +1,22 @@
+[project]
+name = "multicam"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Fahad Mirza",email = "fahadmirza8@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "black (>=25.1.0,<26.0.0)",
+    "pytest (>=8.3.4,<9.0.0)",
+    "mypy (>=1.15.0,<2.0.0)",
+    "numpy (>=2.2.2,<3.0.0)",
+    "numpydantic (>=1.6.7,<2.0.0)",
+    "opencv-python (>=4.11.0.86,<5.0.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
