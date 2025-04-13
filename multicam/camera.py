@@ -1,11 +1,12 @@
 """
-This handles realsense camera frames in a separate process
+This handles realsense camera frames in a separate process.
 """
 
 import logging
 import multiprocessing
 import time
 from multiprocessing.shared_memory import SharedMemory
+from typing import Any
 
 import numpy as np
 import pyrealsense2 as rs
@@ -16,6 +17,16 @@ from multicam.utils import remove_shm_from_resource_tracker
 
 
 class CameraFrameProducer(multiprocessing.Process):
+    """
+    Read camera frames from a realsense camera.
+
+    Once we read a frame, we save it in a shared memory and
+    pass the name of the shared memory downstream for processing.
+
+    Args:
+        camera_config: Camera configuration.
+        output_queue: Output queue where the producer will pass the frames.
+    """
 
     def __init__(
         self, camera_config: CameraConfiguration, output_queue: multiprocessing.Queue
@@ -25,14 +36,15 @@ class CameraFrameProducer(multiprocessing.Process):
 
         self.camera_config = camera_config
         self.output_queue = output_queue
-        self.pipeline = None
 
-        # The following will disable resource tracking for the child process.
-        # Since the objects will be deleted in the main process so,
-        # it is not good to track it in the producer(child) processes.
+        # Realsense camera pipeline.
+        self.pipeline: Any = None
+
+        # The following will disable resource tracking of shared memory for the child process.
+        # Since the shared memory will be released in the main process.
         remove_shm_from_resource_tracker()
 
-    def init_in_run(self):
+    def init_in_run(self) -> None:
         """
         This initialization happens inside the run(). By doing this, we are
         avoiding the pickling for pyrealsense2. pyrealsense2 is not pickable.
@@ -54,48 +66,50 @@ class CameraFrameProducer(multiprocessing.Process):
         self.logger.info(f"Camera {self.camera_config.serial_number} pipeline started!")
 
         # Make sure that the camera is connected to a USB3 port.
-        usb_type_descriptor = self.get_usb_type_descriptor()
+        usb_type_descriptor = self._get_usb_type_descriptor()
         if not usb_type_descriptor.startswith("3"):
             raise SystemError(
                 f"camera_{self.camera_config.alias}({self.camera_config.serial_number}) "
                 "is not connected to USB3!"
             )
 
-    def get_usb_type_descriptor(self) -> str:
-        return (
+    def _get_usb_type_descriptor(self) -> str:
+        usb_type = (
             self.pipeline.get_active_profile()
             .get_device()
             .get_info(rs.camera_info.usb_type_descriptor)
         )
+        return str(usb_type)
 
     def run(self) -> None:
-        """ """
+        """
+        Continuously read frames from the realsense camera.
+        """
         self.init_in_run()
 
         while True:
             try:
-                frameset = self.pipeline.wait_for_frames(
-                    self.camera_config.frame_timeout_ms
-                )
+                frameset = self.pipeline.wait_for_frames(5000)  # 5 seconds.
                 color_frame = np.asarray(frameset.get_color_frame().get_data())
                 depth_frame = np.asarray(frameset.get_depth_frame().get_data())
 
-                color_frame_sm = self._convert_np_array_to_shared_memory_array(
+                color_frame_shm = self._convert_np_array_to_shared_memory_array(
                     color_frame
                 )
-                depth_frame_sm = self._convert_np_array_to_shared_memory_array(
+                depth_frame_shm = self._convert_np_array_to_shared_memory_array(
                     depth_frame
                 )
 
                 shm_frameset = SharedMemoryFrameset(
-                    color_frame=color_frame_sm,
-                    depth_frame=depth_frame_sm,
+                    color_frame=color_frame_shm,
+                    depth_frame=depth_frame_shm,
                     camera_config=self.camera_config,
                     timestamp=time.time(),
                 )
                 self.output_queue.put(shm_frameset)
             except Exception as e:
                 self.logger.error(e)
+                self.pipeline.stop()
                 break
 
     @staticmethod
@@ -104,11 +118,11 @@ class CameraFrameProducer(multiprocessing.Process):
         sm_name: str | None = None,
     ) -> SharedMemoryNdArray:
         """
-        Create a shared memory for a numpy array.
+        Create a shared memory from a numpy array.
 
         Args:
-            np_array: numpy array to save in a shared memory.
-            sm_name: name for the shared memory. Default (None) will generate random name, which is preferable.
+            np_array: Numpy array to save in a shared memory.
+            sm_name: Name for the shared memory. Default (None) will generate random name, which is preferable.
                 Use a fixed name during unit-testing.
 
         Returns:

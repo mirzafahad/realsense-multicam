@@ -14,44 +14,36 @@ from multiprocessing import resource_tracker
 
 def remove_shm_from_resource_tracker() -> None:
     """
-    Disables resource tracking for the Shared Memory for the current process.
-    When we use this function, it overrides the current implementation of resource-tracker
-    register and unregister functions. That ensures the resource tracker does not track the
-    shared memory objects. Without this patch, there will be a memory leak as
-    the resource tracker for each process stores the name of the shared memory with itself
-    such that it can destroy it later.
+    Patches the resource tracker to prevent memory leaks when using shared memory in multiprocessing.
 
-    Since the resource tracker cleans this memory at the end of the program, this
-    list of names keeps growing to a point that it takes up the entire memory space until the docker
-    container crashes and exits.
+    This function disables resource tracking for shared memory objects only in the process where it is called.
+    It overrides the default implementation of `register` and `unregister` in the `multiprocessing.resource_tracker`,
+    ensuring the resource tracker does not track shared memory objects in that process.
 
-    This behavior of resource tracker happens only in multiprocessing code.
-    It is better if we go with the usual behavior of python code and not use this patch code if we
-    are not using a multiprocessing code.
+    ### Why this patch is necessary:
+    In this scenario, shared memory is created in one process and released in another.
+    However, the resource tracker maintains a dictionary of shared memory names until they're explicitly released.
+    If a process that creates shared memory never releases it, the name persists in the dictionary, causing the tracker’s
+    internal data structure to grow indefinitely. Over time, this leads to a memory leak, eventually consuming all
+    available memory and crashing the program.
 
-    Caution:
-        1. This should be used in multiprocessing code only.
-        2. When you call this function, the resource tracker is disabled only for that process.
-        3. If you run it once, then the resources are no more tracked.
-        4. Be careful if you are using semaphores.
-        If you disable resource tracking and due to some reason, not release the semaphores back.
-        Then this might use up all the semaphores of the device.
-        As the number of semaphores is limited, so it might take up all resources.
-        You can know how many semaphores are in the system by the following command:
-        $/> ipcs -ls
-            ------ Semaphore Limits --------
-            max number of arrays = 32000
-            max semaphores per array = 32000
-            max semaphores system-wide = 1024000000
-            max ops per semop call = 500
-            semaphore max value = 32767
-        Semaphores are used by the OS related operations too, so it is a limited resources and thus
-        used wisely.If we accidentally use all the semaphores then the OS might be blocked or wait
-        state forever.
+    ### Usage:
+    - Call this function only in multiprocessing classes or functions that use shared memory.
+    - Once called, the resource tracker will no longer track shared memory resources in that process.
 
-        The safety net is docker container. Since any resource leak stays inside docker container,
-        and it does not reflect on the edge device. Restarting docker container solves the memory problem.
+    ### Caution:
+    1. Use only in multiprocessing contexts.
+    2. The patch is process-local, it affects only the process where it is applied.
+    3. Once tracking is disabled, it is your responsibility to manually manage and clean up shared memory.
+    4. Be especially careful when using semaphores. If the tracker is disabled, and they are not properly released,
+       you may exhaust the system’s semaphore limits, which could block the OS or leave it in a wait state.
 
+    You can inspect system semaphore limits with:
+    $/> ipcs -ls
+
+    ### Docker Consideration:
+    If running inside a Docker container, resource leaks caused by this patch will remain isolated to the container.
+    Restarting the container will clear any leaked resources.
     """
 
     def fix_register(name, rtype):

@@ -1,12 +1,13 @@
 import time
-from pydantic import Field, ConfigDict
-import numpy as np
-from numpydantic import NDArray
-from numpy.typing import DTypeLike
+from dataclasses import dataclass, field
 from enum import IntEnum
 from multiprocessing.shared_memory import SharedMemory
+
+import numpy as np
+from numpy.typing import DTypeLike
+from numpydantic import NDArray
 from pydantic import BaseModel as PyBaseModel
-from dataclasses import dataclass, field
+from pydantic import Field, ConfigDict
 
 
 class BaseModel(PyBaseModel):
@@ -51,7 +52,7 @@ class RotationAngle(IntEnum):
             ValueError: if not in `[0, 90, 180, 270]`.
         """
         if angle not in [0, 90, 180, 270]:
-            raise ValueError("angle must be one of 0, 90, 180, 270")
+            raise ValueError("Angle must be one of 0, 90, 180, 270")
 
         return RotationAngle(angle // 90)
 
@@ -64,11 +65,11 @@ class CameraConfiguration(BaseModel):
     # User-provided name for clarity.
     alias: str = ""
 
-    # USB connection type (e.g. 3.2 or 2.1).
+    # USB connection type (e.g., 3.2 or 2.1).
     # Useful for verifying camera is connected to the right USB port.
     usb_type_descriptor: str = ""
 
-    # Camera firmware version.
+    # Camera firmware version. Populated by pyrealsense2.
     firmware_version: str = ""
 
     # Camera serial number.
@@ -82,9 +83,6 @@ class CameraConfiguration(BaseModel):
 
     # Rotation angle of the final frame.
     rotation_angle: RotationAngle = Field(default=RotationAngle.ANGLE_0)
-
-    # Timeout for reading frames from realsense.
-    frame_timeout_ms: int = 5000
 
     def get_int_rotation_angle(self) -> int:
         """
@@ -154,7 +152,7 @@ class SharedMemoryFrameset:
     camera_config: CameraConfiguration
     timestamp: float = field(default_factory=time.time)
 
-    def unlink_all_frame_memory(self) -> None:
+    def unlink_all_memory(self) -> None:
         """
         Unlink the shared memories. This will delete the reference of the memory.
         """
