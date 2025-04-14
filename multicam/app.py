@@ -44,11 +44,13 @@ def main() -> None:
     except Exception as e:
         logger.warning(e)
     finally:
+        # Shutdown the processes.
         for camera_process in camera_processes:
             camera_process.terminate()
             camera_process.join()
         logger.info("All camera processes terminated!")
 
+        # Check for leftover shared-memory data and unlink them.
         if not output_queue.empty():
             logger.warning(f"Queue has shared-memory-frames: {output_queue.qsize()}")
             while not output_queue.empty():
