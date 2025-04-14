@@ -3,7 +3,7 @@ import logging
 from multicam.config import CAMERAS
 from multicam.camera_frame_producer import CameraFrameProducer
 from multicam.data import CameraConfiguration, SharedMemoryFrameset
-from multicam.viewer import CameraFrameConsumer
+from multicam.camera_frame_consumer import CameraFrameConsumer
 
 
 def main() -> None:
