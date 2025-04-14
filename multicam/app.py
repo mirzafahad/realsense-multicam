@@ -1,19 +1,9 @@
 import multiprocessing as mp
 import logging
+from multicam.config import CAMERAS
 from multicam.camera import CameraFrameProducer
 from multicam.data import CameraConfiguration, SharedMemoryFrameset
 from multicam.viewer import CameraFrameViewer
-
-# The cameras are placed in a circle. The position of the camera
-# is used as an alias for the camera to easily identify in the real world.
-cameras = {
-    "TWO_O_CLOCK": "010203",
-    "FOUR_O_CLOCK": "040506",
-    "SIX_O_CLOCK": "070809",
-    "EIGHT_O_CLOCK": "101112",
-    "TEN_O_CLOCK": "131415",
-    "TWELVE_O_CLOCK": "161718",
-}
 
 
 def main() -> None:
@@ -24,7 +14,7 @@ def main() -> None:
     output_queue = mp.Queue()  # type: mp.Queue
 
     # Start all camera processes using default configurations.
-    for camera_name, serial_number in cameras.items():
+    for camera_name, serial_number in CAMERAS.items():
         # Using default fps and resolutions.
         camera_config = CameraConfiguration(
             alias=camera_name,
