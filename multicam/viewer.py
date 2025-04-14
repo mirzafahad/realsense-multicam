@@ -30,7 +30,7 @@ class CameraFrame(BaseModel):
     fps_stats: FpsStats = Field(default_factory=FpsStats)
 
 
-class CameraFrameViewer:
+class CameraFrameConsumer:
     """
     View camera frames real-time.
     Args:
