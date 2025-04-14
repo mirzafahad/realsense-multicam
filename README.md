@@ -1,7 +1,7 @@
-# Multi Realsense Camera Frame Capture on Jetson Nano
+# Multi Realsense Camera Frame Capture on Jetson Orin
 
-Stream and process frames from **up to six Intel Realsense cameras** in parallel on an 
-**NVIDIA Jetson Nano** using **Python multiprocessing** and **shared memory**. 
+Stream and process frames from **up to six** Intel Realsense cameras in parallel on an 
+**NVIDIA Jetson Orin** using Python multiprocessing and shared memory. 
 This project is optimized for edge performance and provides a robust architecture for 
 high-bandwidth vision tasks.
 
@@ -10,7 +10,7 @@ With 2 cameras, I was able to achieve 30 fps. With 6 cameras, the frame rate dro
 Your results may vary depending on your setup.
 
 ## Hardware Used
-- NVIDIA Jetson Nano (4GB)
+- NVIDIA Jetson Orin.
 - Intel Realsense D405 (x6)
 
 ## Key Concepts
