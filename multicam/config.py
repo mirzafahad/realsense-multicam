@@ -1,3 +1,6 @@
+"""
+The configurations of the application.
+"""
 # The cameras are placed in a circle. The position of the camera
 # is used as an alias for the camera to easily identify in the real world.
 CAMERAS = {

@@ -1,3 +1,6 @@
+"""
+The data structure the application uses.
+"""
 import time
 from dataclasses import dataclass, field
 from enum import IntEnum
@@ -175,4 +178,7 @@ class SharedMemoryFrameset:
 
     @property
     def camera_alias(self) -> str:
+        """
+        The custom name of the camera.
+        """
         return self.camera_config.alias

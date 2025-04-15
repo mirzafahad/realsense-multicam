@@ -1,3 +1,7 @@
+"""
+The main application that starts the processes that grabs frames
+and display it on the screen.
+"""
 import multiprocessing as mp
 import logging
 from multicam.config import CAMERAS
@@ -7,6 +11,9 @@ from multicam.camera_frame_consumer import CameraFrameConsumer
 
 
 def main() -> None:
+    """
+    The main.
+    """
     logger = logging.getLogger(f"{__name__}")
 
     camera_processes = []

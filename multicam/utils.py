@@ -25,9 +25,9 @@ def remove_shm_from_resource_tracker() -> None:
     ### Why this patch is necessary:
     In this scenario, shared memory is created in one process and released in another.
     However, the resource tracker maintains a dictionary of shared memory names until they're explicitly released.
-    If a process that creates shared memory never releases it, the name persists in the dictionary, causing the tracker’s
-    internal data structure to grow indefinitely. Over time, this leads to a memory leak, eventually consuming all
-    available memory and crashing the program.
+    If a process that creates shared memory never releases it, the name persists in the dictionary,
+    causing the tracker’s internal data structure to grow indefinitely. Over time, this leads to a memory leak,
+    eventually consuming all available memory and crashing the program.
 
     ### Usage:
     - Call this function only in multiprocessing classes or functions that use shared memory.

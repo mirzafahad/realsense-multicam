@@ -1,5 +1,7 @@
+"""
+The consumer that digest the camera frames.
+"""
 import multiprocessing
-import sys
 import time
 
 import cv2

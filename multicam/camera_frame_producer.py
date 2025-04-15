@@ -12,7 +12,11 @@ import numpy as np
 import pyrealsense2 as rs
 from numpydantic import NDArray
 
-from multicam.data_contract import CameraConfiguration, SharedMemoryNdArray, SharedMemoryFrameset
+from multicam.data_contract import (
+    CameraConfiguration,
+    SharedMemoryNdArray,
+    SharedMemoryFrameset,
+)
 from multicam.utils import remove_shm_from_resource_tracker
 
 
@@ -122,8 +126,8 @@ class CameraFrameProducer(multiprocessing.Process):
 
         Args:
             np_array: Numpy array to save in a shared memory.
-            sm_name: Name for the shared memory. Default (None) will generate random name, which is preferable.
-                Use a fixed name during unit-testing.
+            sm_name: Name for the shared memory. Default (None) will generate random name,
+                which is preferable. Use a fixed name during unit-testing.
 
         Returns:
             SharedMemoryNdArray with np_array saved in the shared memory buffer.
