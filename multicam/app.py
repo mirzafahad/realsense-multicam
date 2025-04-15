@@ -2,7 +2,7 @@ import multiprocessing as mp
 import logging
 from multicam.config import CAMERAS
 from multicam.camera_frame_producer import CameraFrameProducer
-from multicam.data import CameraConfiguration, SharedMemoryFrameset
+from multicam.data_contract import CameraConfiguration, SharedMemoryFrameset
 from multicam.camera_frame_consumer import CameraFrameConsumer
 
 

@@ -9,6 +9,8 @@ It works effectively with 2 to 6 cameras (I have not tested beyond 6 due to USB 
 With 2 cameras, I was able to achieve 30 fps. With 6 cameras, the frame rate dropped to around 5 fps. 
 Your results may vary depending on your setup.
 
+The [doc](https://mirzafahad.github.io/2025-04-14-multiple-realsense-camera-using-jetson-orin/) goes behind the scenes.
+
 ## Hardware Used
 - NVIDIA Jetson Orin.
 - Intel Realsense D405 (x6)

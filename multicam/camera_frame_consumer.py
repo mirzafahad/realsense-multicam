@@ -7,7 +7,7 @@ import numpy as np
 from numpydantic import NDArray
 from pydantic import BaseModel, Field
 
-from multicam.data import SharedMemoryFrameset
+from multicam.data_contract import SharedMemoryFrameset
 
 
 class FpsStats(BaseModel):

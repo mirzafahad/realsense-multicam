@@ -1,6 +1,8 @@
 """
 Monkey-patch multiprocessing.resource_tracker so SharedMemory won't be tracked
-More details at: https://bugs.python.org/issue38119
+More details at:
+https://bugs.python.org/issue38119
+https://github.com/python/cpython/issues/82300
 
 Below a link is a more detailed version of this patch:
 https://github.com/python/cpython/pull/15989

@@ -12,7 +12,7 @@ import numpy as np
 import pyrealsense2 as rs
 from numpydantic import NDArray
 
-from multicam.data import CameraConfiguration, SharedMemoryNdArray, SharedMemoryFrameset
+from multicam.data_contract import CameraConfiguration, SharedMemoryNdArray, SharedMemoryFrameset
 from multicam.utils import remove_shm_from_resource_tracker
 
 
