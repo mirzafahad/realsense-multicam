@@ -1,5 +1,5 @@
 """
-The consumer that digest the camera frames.
+The consumer that digests the camera frames.
 """
 import multiprocessing
 import time
